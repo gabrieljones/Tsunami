@@ -5,40 +5,61 @@ void Player();
 
 State state;
 Timer oceanAmbientOrClear;
-Timer waveTimer;
 Timer playerSelectedAnim;
 
 Color colors[] = {WHITE, RED, ORANGE, YELLOW, GREEN, CYAN, BLUE, MAGENTA};
 byte playerColor;
-byte waveData;
 byte waveSpeed;
 byte lives;
 bool sending;
-byte waveToSend;
+byte waveToSend[] = {0, 0, 0, 0, 0, 0};
+
+Timer waveToSendTimer[6];
+Timer sleepFace[6];
 
 void Ocean() {
-  waveData = 0;
 
   FOREACH_FACE(f) {
-    if (!isValueReceivedOnFaceExpired(f) && waveData == 0) { //get the first not 0 face
-      waveData = getLastValueReceivedOnFace(f);
+    if (sleepFace[f].isExpired() && !isValueReceivedOnFaceExpired(f)) {
+      byte waveData = getLastValueReceivedOnFace(f);
+      if (waveData != 0) {
+        FOREACH_FACE(g) {
+          if (g != f) {
+            waveToSend[g] = waveData;
+            int waveSpeed = waveData & 56;//8 + 16 + 32
+            waveToSendTimer[g].set(waveSpeed << 2);
+            oceanAmbientOrClear.set(1000);
+          }
+        }
+        sleepFace[f].set(100); //sleep receive on face for 100ms
+      }
     }
   }
-  
-  if (waveData != 0) {
-    byte waveColor = waveData & 7;
-    waveSpeed = waveData & 56;//8 + 16 + 32
-    waveTimer.set(waveSpeed << 2);
+  byte waveToShow = 0;
+  FOREACH_FACE(f) { //display one of the waves
+    if (waveToSend[f] != 0) { waveToShow = waveToSend[f]; }
+  }
+
+  if (waveToShow != 0) {
+    byte waveColor = waveToShow & 7;
+    int waveSpeed = waveToShow & 56;//8 + 16 + 32
+    oceanAmbientOrClear.set(waveSpeed << 2);
     setColor(colors[waveColor]);
-    waveToSend = waveData;
   }
 
-  if (waveToSend != 0 && waveTimer.isExpired()) {
-      setValueSentOnAllFaces(waveData);
-      waveToSend = 0;
+  FOREACH_FACE(f) {
+    if (waveToSendTimer[f].isExpired()) { //either setting face or clearing face
+      if (waveToSend[f] != 0) { //something to send set face
+        setValueSentOnFace(waveToSend[f], f);
+        waveToSend[f] = 0; //sent no longer need to send
+        waveToSendTimer[f].set(100); //reset face to zero after 100ms;
+      } else {  //nothing to send clear
+        setValueSentOnFace(0, f);
+      }
+    }
   }
 
-  if(waveTimer.isExpired() && oceanAmbientOrClear.isExpired()) { //idle ocean animation
+  if(oceanAmbientOrClear.isExpired()) { //idle ocean animation
     setColor(OFF);
     setColorOnFace(makeColorRGB(0, 0, 32), random(5));
     oceanAmbientOrClear.set(1000);
@@ -77,7 +98,7 @@ void Player() {
     //send wave
     setValueSentOnAllFaces(waveSpeed + playerColor);
     sending = true;
-    oceanAmbientOrClear.set(100);
+    oceanAmbientOrClear.set(256);
   }
   if (sending && oceanAmbientOrClear.isExpired()) {
     setValueSentOnAllFaces(0);
