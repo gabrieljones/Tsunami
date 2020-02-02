@@ -32,8 +32,8 @@ Double click: Send Wave
 
 Single click: Catch wave
 
-- Success: Increase send speed
-- Failure: Lose life
+- Success: Increase player's send wave speed
+- Failure(too early, too late): Lose life
 
 Long press -> Ocean
 
