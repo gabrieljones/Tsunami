@@ -1,11 +1,13 @@
 #include "functionheader.h"
 void Ocean();
-void PlayerSelect();
+void ColorSelect();
+void ColorSelected();
 void Player();
+void PlayerHasWave();
 
 State state;
-Timer oceanAmbientOrClear;
-Timer playerSelectedAnim;
+Timer animationTimer;
+Timer clearTimer;
 
 Color colors[] = {WHITE, RED, ORANGE, YELLOW, GREEN, CYAN, BLUE, MAGENTA};
 byte playerColor;
@@ -15,7 +17,7 @@ bool sending;
 byte waveToSend[6] = {0, 0, 0, 0, 0, 0};
 
 Timer waveToSendTimer[6];
-Timer sleepFaceColor[6];
+Timer sleepColor[6];
 
 void Ocean() {
 
@@ -23,17 +25,17 @@ void Ocean() {
     if (!isValueReceivedOnFaceExpired(f)) {
       byte waveData = getLastValueReceivedOnFace(f);
       byte color = waveData & 7;
-      if (waveData != 0 && sleepFaceColor[color].isExpired()) { // face is not zero and is not an ignored color
+      if (waveData != 0 && sleepColor[color].isExpired()) { // face is not zero and is not an ignored color
         FOREACH_FACE(g) {
           if (g != f) {
             waveToSend[g] = waveData;
             int waveSpeed = waveData & 56;//8 + 16 + 32
             waveToSendTimer[g].set(waveSpeed << 2);
-            oceanAmbientOrClear.set(1000);
+            animationTimer.set(1000);
           }
         }
       }
-      sleepFaceColor[color].set(1024); //ignore this color for a time
+      sleepColor[color].set(1024); //ignore this color for a time
     }
   }
   byte waveToShow = 0;
@@ -44,7 +46,7 @@ void Ocean() {
   if (waveToShow != 0) {
     byte waveColor = waveToShow & 7;
     int waveSpeed = waveToShow & 56;//8 + 16 + 32
-    oceanAmbientOrClear.set(waveSpeed << 2);
+    animationTimer.set(waveSpeed << 2);
     setColor(colors[waveColor]);
   }
 
@@ -60,71 +62,96 @@ void Ocean() {
     }
   }
 
-  if(oceanAmbientOrClear.isExpired()) { //idle ocean animation
+  if(animationTimer.isExpired()) { //idle ocean animation
     setColor(OFF);
     setColorOnFace(makeColorRGB(0, 0, 32), random(5));
-    oceanAmbientOrClear.set(1000);
+    animationTimer.set(1000);
   }
 
   if (buttonLongPressed()) {
-    state = PlayerSelect;
+    state = ColorSelect;
   }
 }
 
-void PlayerSelect() {
+void ColorSelect() {
   setColor(colors[playerColor]);
   if (buttonSingleClicked()) {
     //advance color
     playerColor = (playerColor + 1) % 7 + 1; //unintentional interleave but i am keeping it, i was planning to interleave anyway
   }
   if (buttonLongPressed()) {
+    state = ColorSelected;
+    animationTimer.set(1000);
+  }
+}
+
+void ColorSelected() {
+  if (!animationTimer.isExpired()) {
+    setColor(dim(colors[playerColor], sin8_C(animationTimer.getRemaining() % 255)));
+  } else {
+  setColor(colors[playerColor]);
     state = Player;
-    playerSelectedAnim.set(1000);
   }
 }
 
 void Player() {
-  if (!playerSelectedAnim.isExpired()) {
-    setColor(dim(colors[playerColor], sin8_C(playerSelectedAnim.getRemaining() % 255)));
-  } else {
-    setColor(colors[playerColor]);
-  }
   if (buttonLongPressed()) {
     state = Ocean;
   }
-  if (buttonSingleClicked()) {
-    //catch wave
+  if (buttonSingleClicked()) { //clicked to early, lose life
+    lives -= 1;
   }
   if (buttonDoubleClicked()) {
     //send wave
     setValueSentOnAllFaces(waveSpeed + playerColor);
     sending = true;
-    oceanAmbientOrClear.set(256);
+    clearTimer.set(256);
   }
-  if (sending && oceanAmbientOrClear.isExpired()) {
+  if (sending && clearTimer.isExpired()) {
     setValueSentOnAllFaces(0);
     sending = false;
   }
+  
   //process incoming wave
   FOREACH_FACE(f) {
-    if (!isValueReceivedOnFaceExpired(f) && didValueOnFaceChange(f)) {
-      //set wave present timer
-      // if wave not caught decrement life
-      // if catch attempted but no wave present decrement life
-//      waveData = getLastValueReceivedOnFace(f);
-//      if (waveData != 0) {
-//        waveColor = waveData & 7;
-//        waveSpeed = waveData & 56;//8 + 16 + 32
-//        waveTimer.set(waveSpeed >> 2);
-//      }
+    if (!isValueReceivedOnFaceExpired(f)) {
+      byte waveData = getLastValueReceivedOnFace(f);
+      byte color = waveData & 7;
+      if (waveData != 0 && sleepColor[color].isExpired()) { // face is not zero and is not an ignored color
+        // wave arrived, player must deal with it
+        state = PlayerHasWave;
+        int waveSpeed = waveData & 56;//8 + 16 + 32
+        clearTimer.set(waveSpeed << 3); // twice the propagation speed
+      }
+      sleepColor[color].set(1024); //ignore this color for a time
     }
+  }
+  
+  FOREACH_FACE(f) { //animate
+    if ((f + (millis() >> 8) % 5) < lives) { // TODO phase shift on millis
+      setColorOnFace(colors[playerColor], f);
+    } else {
+      setColorOnFace(OFF, f);
+    }
+  }
+}
+
+void PlayerHasWave() {
+  setColor(WHITE);//TODO animate
+  if (clearTimer.isExpired()) { //didn't catch wave, lose life
+    lives -= 1;
+    state = Player;
+  }
+  if (buttonSingleClicked()) { //caught wave, increase speed
+    state = Player;
+    waveSpeed = max(waveSpeed - 8, 8);
   }
 }
 
 void setup() {
   state = Ocean;
   playerColor = 1;
-  lives = 6;
+  lives = 5;
   waveSpeed = 56;
   sending = false;
 }
