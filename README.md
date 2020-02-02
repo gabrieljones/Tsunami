@@ -2,8 +2,8 @@
 
 Send a wave, catch a wave. A game for Blinks. https://blinks.games/
 
-Players: 2 - infinity
-Blinks: 12 - infinity
+Players: 2 - infinity  
+Blinks: 12 - infinity  
 Playtime: short, to be determined
 
 Try to swamp your opponents with waves.
@@ -44,3 +44,4 @@ Long press -> Ocean
 - Out of lives does not disable player from sending waves.
 - Resetting to Ocean should run setup maybe, and start fresh? (Refresh lives on Blink)
 - Waves of the same color will cancel eachother out.
+- Large wholes in the ocean (3-4+ tiles) will create continuous wave generators.
