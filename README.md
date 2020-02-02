@@ -39,7 +39,7 @@ Long press -> Ocean
 
 ## Known Issues
 
-- Magenta can't send waves reliably. ¯\_(ツ)_/¯
+- Magenta can't send waves reliably. ¯\\_(ツ)_/¯
 - Animations need lots of work.
 - Out of lives does not disable player from sending waves.
 - Resetting to Ocean should run setup maybe, and start fresh? (Refresh lives on Blink)
