@@ -12,17 +12,18 @@ byte playerColor;
 byte waveSpeed;
 byte lives;
 bool sending;
-byte waveToSend[] = {0, 0, 0, 0, 0, 0};
+byte waveToSend[6] = {0, 0, 0, 0, 0, 0};
 
 Timer waveToSendTimer[6];
-Timer sleepFace[6];
+Timer sleepFaceColor[6];
 
 void Ocean() {
 
   FOREACH_FACE(f) {
-    if (sleepFace[f].isExpired() && !isValueReceivedOnFaceExpired(f)) {
+    if (!isValueReceivedOnFaceExpired(f)) {
       byte waveData = getLastValueReceivedOnFace(f);
-      if (waveData != 0) {
+      byte color = waveData & 7;
+      if (waveData != 0 && sleepFaceColor[color].isExpired()) { // face is not zero and is not an ignored color
         FOREACH_FACE(g) {
           if (g != f) {
             waveToSend[g] = waveData;
@@ -31,8 +32,8 @@ void Ocean() {
             oceanAmbientOrClear.set(1000);
           }
         }
-        sleepFace[f].set(100); //sleep receive on face for 100ms
       }
+      sleepFaceColor[color].set(1024); //ignore this color for a time
     }
   }
   byte waveToShow = 0;
