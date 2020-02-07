@@ -1,4 +1,5 @@
-#include "functionheader.h"
+typedef void (*State) ();
+
 void Ocean();
 void ColorSelect();
 void ColorSelected();
