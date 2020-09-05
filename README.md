@@ -39,9 +39,11 @@ Blinks start as ocean tiles, which propogate waves.
 
 Randomly become Wave Triggers.
 
-### Wave Triggers
+### Wave Trigger
 
 Allow triggering a wave of the indicated team color
+
+Reverts to Ocean after two seconds.
 
 Single click -> Send Wave of the indicated color
 
