@@ -1,47 +1,61 @@
-# Tsunami
+# Tsunami Mk 2
 
-Send a wave, catch a wave. A game for Blinks. https://blinks.games/
+Send a wave, capture the shore. A game for Blinks. https://blinks.games/
 
-Players: 2 - infinity  
-Blinks: 12 - infinity  
+Players: Up to 5 teams
+Teams: Each team can have as many players as will fit around the table.
+Blinks: 24 - infinity  
 Playtime: short, to be determined
 
-Try to swamp your opponents with waves.
+Try to claim the shore with waves of your team's color.
 
-Try to catch waves to level up the speed your waves travel.
+## Setup
 
-Miss a wave and you lose a life.
+Each player chooses a team color: Red, Yellow, Green, Blue, or Megenta.
+
+Place the blinks in one large cluster.  "Holes" made by removing one or two blinks can be used to maximize the ocean size of a given quantity of blinks.
+
+## Play
+
+When an Ocean tile becomes a Wave Trigger of your team's color, click it to send a wave of your color.
+
+## Victory
+
+When there are no more Ocean tiles, count up the Claimed Shore tiles of each color. The team color with the most Claimed tiles wins.
+
+## Reset
+
+Long press any blink to send a reset wave that reinitializes all blinks to ocean tiles.
+
 
 ## Tiles
 
 ### Ocean
 
-Blinks start as ocean tiles, which propogate waves
+Blinks start as ocean tiles, which propogate waves.
 
-Long press -> Player Color Select
+Randomly become Wave Triggers.
 
-### Player Color Select
+### Wave Triggers
 
-Single click -> change color
+Allow triggering a wave of the indicated team color
 
-Long press -> lock in color, Player
+Single click -> Send Wave of the indicated color
 
-### Player
+### Shore Open
 
-Double click: Send Wave
+Blinks on the edge will show a white border indicating they are open shore tiles available to be claimed by the next wave to crash into them.
 
-Single click: Catch wave
+When a wave crashes into an open shore, the blink becomes "Shore Claimed" for the team color of the crashing wave.
 
-- Success: Increase player's send wave speed
-- Failure(too early, too late): Lose life
+### Shore Claimed
 
-Long press -> Ocean
+Locked to the team color of the wave that crashed into it.
 
 ## Known Issues
 
-- Magenta can't send waves reliably. ¯\\\_(ツ)\_/¯
+- Only 5 colors enabled
+- Colors 6 and 7 end up causing weird propagation effects.
 - Animations need lots of work.
-- Out of lives does not disable player from sending waves.
-- Resetting to Ocean should run setup maybe, and start fresh? (Refresh lives on Blink)
 - Waves of the same color will cancel eachother out.
-- Large wholes in the ocean (3-4+ tiles) will create continuous wave generators.
+- Large holes in the ocean (3-4+ tiles) will create continuous wave generators.
