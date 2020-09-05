@@ -14,7 +14,7 @@ Try to claim the shore with waves of your team's color.
 
 ## Setup
 
-Each player chooses a team color: Red, Yellow, Green, Blue, or Megenta.
+Each player chooses a team color: Red, Yellow, Green, Blue, or Magenta.
 
 Place the blinks in one large cluster.  "Holes" made by removing one or two blinks can be used to maximize the ocean size of a given quantity of blinks.
 
