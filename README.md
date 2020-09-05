@@ -3,8 +3,11 @@
 Send a wave, capture the shore. A game for Blinks. https://blinks.games/
 
 Players: Up to 5 teams
+
 Teams: Each team can have as many players as will fit around the table.
+
 Blinks: 24 - infinity  
+
 Playtime: short, to be determined
 
 Try to claim the shore with waves of your team's color.
