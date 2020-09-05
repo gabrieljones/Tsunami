@@ -2,9 +2,9 @@
 
 Send a wave, capture the shore. A game for Blinks. https://blinks.games/
 
-Players: Up to 5 teams
+Players: As many as can fit around the table/cluster of blinks.
 
-Teams: Each team can have as many players as will fit around the table.
+Teams: Up to 5 teams; Red, Yellow, Green, Blue, and Megenta
 
 Blinks: 24 - infinity  
 
